@@ -1,0 +1,10 @@
+.container {
+  display: grid;
+  grid-template-columns: 1fr max-content 1fr;
+  grid-template-rows: [vp-start]1rem[header-start] 4rem[header-end board-start] max-content[board-end controls-start] max-content[controls-end] 2rem[vp-end];
+  gap: 1rem;
+  @media (max-width: 55em) {
+    grid-template-rows: [vp-start].25rem[header-start] 4rem[header-end board-start] max-content[board-end controls-start] max-content[controls-end] .25rem[vp-end];
+    gap: 1rem 0;
+  }
+}
