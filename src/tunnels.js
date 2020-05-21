@@ -67,14 +67,14 @@ const digThrough = ({
     let nextCellType = nextStep.type
 
     if (nextCellType === undefined) {
-      grid[nextStepIndex].type = "floor"
+      grid[nextStepIndex].type = "tunnel"
       startingPoint = nextStepIndex
       continue
     } else if (nextCellType === "wall") {
       grid[nextStepIndex].type = "door"
       arrived = true
       break
-    } else if (nextCellType === "floor") {
+    } else if (nextCellType === "floor" || nextCellType === "tunnel") {
       const surroundings = getSurroundings(startingPoint, grid, gridWidth)
       if (!isThereSpaceToMove(surroundings)) {
         arrived = true

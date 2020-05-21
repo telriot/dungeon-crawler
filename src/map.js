@@ -1,27 +1,42 @@
 import { createTunnel } from "./tunnels"
-import { pickRangeNumber, getRandomCellOnMap, getSurroundings } from "./helpers"
-const GRID_HEIGHT = 50
-const GRID_WIDTH = 50
-const MIN_ROOMS = 5
-const MAX_ROOMS = 8
-const MIN_ROOM_DIMENSION = 5
-const MAX_ROOM_DIMENSION = 10
-const DOOR_FACTOR = 2
+import {
+  pickRangeNumber,
+  getRandomCellOnMap,
+  getRandomCellType,
+} from "./helpers"
+import { monsters } from "./monsters"
+import { items } from "./items"
 //MAP CREATION
 const createGrid = (height, width) => {
   let grid = []
   for (let row = 0; row < height; row++) {
     for (let col = 0; col < width; col++) {
-      grid.push({ type: undefined, row, col })
+      grid.push({
+        type: undefined,
+        row,
+        col,
+        isVisited: false,
+        monster: null,
+        item: null,
+      })
     }
   }
   return grid
+}
+const placeBorders = (grid, height, width) => {
+  for (let cell = 0; cell < grid.length; cell++) {
+    if (cell < width) grid[cell].type = "border"
+    const modulo = cell % width
+    if (modulo === 0 || modulo === width - 1) grid[cell].type = "border"
+    if (cell > grid.length - width) grid[cell].type = "border"
+  }
 }
 
 const createRoom = (minDimension, maxDimension) => {
   const height = pickRangeNumber(minDimension, maxDimension)
   const width = pickRangeNumber(minDimension, maxDimension)
   const maxDoors = Math.floor((height + width) / 6.75)
+  const doorFactor = 2
   let doors = 0
   let roomCells = []
 
@@ -44,7 +59,7 @@ const createRoom = (minDimension, maxDimension) => {
         } else {
           if (
             doors < maxDoors &&
-            (Math.random() * (width + height * 2) <= DOOR_FACTOR ||
+            (Math.random() * (width + height * 2) <= doorFactor ||
               (lastRow && lastCol - 1))
           ) {
             roomCells.push({ type: "door", row, col })
@@ -160,14 +175,6 @@ const placeRooms = ({
     placeRoom(grid, start, room, gridWidth)
   }
 }
-const placeBorders = (grid, height, width) => {
-  for (let cell = 0; cell < grid.length; cell++) {
-    if (cell < width) grid[cell].type = "border"
-    const modulo = cell % width
-    if (modulo === 0 || modulo === width - 1) grid[cell].type = "border"
-    if (cell > grid.length - width) grid[cell].type = "border"
-  }
-}
 
 const locateDoors = (grid) => {
   const doors = []
@@ -177,6 +184,32 @@ const locateDoors = (grid) => {
   return doors
 }
 
+const placeMonsters = (grid) => {
+  const monsterDensity = 8
+  for (let cell = 0; cell < grid.length; cell++) {
+    if (grid[cell].type === "floor") {
+      let rollOneHundred = Math.random() * 100
+      if (monsterDensity > rollOneHundred) {
+        let monster =
+          monsters[Math.round(Math.pow(Math.random(), 2) * monsters.length)]
+        grid[cell].monster = monster
+      }
+    }
+  }
+}
+const placeItems = (grid) => {
+  const itemDensity = 2
+  for (let cell = 0; cell < grid.length; cell++) {
+    if (grid[cell].type === "floor" || grid[cell].type === "tunnel") {
+      let rollOneHundred = Math.random() * 100
+      if (itemDensity > rollOneHundred) {
+        grid[cell].item =
+          items[Math.round(Math.pow(Math.random(), 2) * items.length)]
+      }
+    }
+  }
+}
+
 export const createDungeon = ({
   gridHeight,
   gridWidth,
@@ -184,6 +217,8 @@ export const createDungeon = ({
   maxRooms,
   minRoomDimension,
   maxRoomDimension,
+  stepMinLength,
+  stepMaxLength,
 }) => {
   let grid = createGrid(gridHeight, gridWidth)
   placeBorders(grid, gridHeight, gridWidth)
@@ -204,9 +239,11 @@ export const createDungeon = ({
       grid,
       gridWidth,
       gridHeight,
-      stepMinLength: 2,
-      stepMaxLength: 15,
+      stepMinLength,
+      stepMaxLength,
     })
   }
+  placeMonsters(grid)
+  placeItems(grid)
   return grid
 }

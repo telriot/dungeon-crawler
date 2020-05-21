@@ -18,8 +18,9 @@
 .cell {
   height: 1rem;
   width: 1rem;
+  opacity: 0.7;
 
-  background-color: white;
+  background-color: black;
   border: 1px dotted grey;
   margin: 0;
   @media (max-width: 55em) {
@@ -39,42 +40,33 @@
 }
 
 .wall {
-  height: 1rem;
-  width: 1rem;
-
-  background-color: black;
-  border: 1px dotted grey;
-  margin: 0;
+  background-color: darkslategray;
 }
 .floor {
-  height: 1rem;
-  width: 1rem;
-
   background-color: green;
-  border: 1px dotted grey;
-  margin: 0;
+}
+.tunnel {
+  background-color: darkgreen;
 }
 .corner {
-  height: 1rem;
-  width: 1rem;
-
   background-color: grey;
-  border: 1px dotted grey;
-  margin: 0;
 }
 .door {
-  height: 1rem;
-  width: 1rem;
-
   background-color: brown;
-  border: 1px dotted grey;
-  margin: 0;
 }
 .border {
-  height: 1rem;
-  width: 1rem;
+  background-color: black;
+}
 
-  background-color: blue;
-  border: 1px dotted grey;
-  margin: 0;
+.character {
+  background-color: goldenrod !important;
+}
+.monster {
+  background-color: orangered;
+}
+.item {
+  background-color: teal;
+}
+.cellVisible {
+  opacity: 1;
 }
