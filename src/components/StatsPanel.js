@@ -46,7 +46,11 @@ function StatsPanel() {
     >
       <div className={styles.mobileWeapon}>
         {weapons[0] ? (
-          <img className={styles.weaponImg} src={itemImg(weapons[0].name)} />
+          <img
+            className={styles.weaponImg}
+            src={itemImg(weapons[0].name)}
+            alt="weapon"
+          />
         ) : null}
       </div>
       <div className={styles.itemsMobile}>
@@ -62,7 +66,11 @@ function StatsPanel() {
           className={styles.mobileButton1}
         >
           {items[0] ? (
-            <img className={styles.itemImg} src={itemImg(items[0].name)} />
+            <img
+              className={styles.itemImg}
+              src={itemImg(items[0].name)}
+              alt="item 0"
+            />
           ) : (
             1
           )}
@@ -72,7 +80,11 @@ function StatsPanel() {
           className={styles.mobileButton2}
         >
           {items[1] ? (
-            <img className={styles.itemImg} src={itemImg(items[1].name)} />
+            <img
+              className={styles.itemImg}
+              src={itemImg(items[1].name)}
+              alt="item 1"
+            />
           ) : (
             2
           )}
@@ -82,7 +94,11 @@ function StatsPanel() {
           className={styles.mobileButton3}
         >
           {items[2] ? (
-            <img className={styles.itemImg} src={itemImg(items[2].name)} />
+            <img
+              className={styles.itemImg}
+              src={itemImg(items[2].name)}
+              alt="item 2"
+            />
           ) : (
             3
           )}
@@ -92,7 +108,11 @@ function StatsPanel() {
           className={styles.mobileButton4}
         >
           {items[3] ? (
-            <img className={styles.itemImg} src={itemImg(items[3].name)} />
+            <img
+              className={styles.itemImg}
+              src={itemImg(items[3].name)}
+              alt="item 3"
+            />
           ) : (
             4
           )}

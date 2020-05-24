@@ -4,7 +4,9 @@ import styles from "./Cell.module.scss"
 
 function Item(props) {
   const { item } = props
-  return <img className={styles.itemImg} src={itemImg(item.name)}></img>
+  return (
+    <img className={styles.itemImg} src={itemImg(item.name)} alt="character" />
+  )
 }
 
 export default Item

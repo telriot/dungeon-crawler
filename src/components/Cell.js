@@ -52,7 +52,7 @@ function Cell(props) {
 
   return (
     <div className={cellClass} onDoubleClick={handleCellClick(cell)}>
-      <img className={styles.tileImg} src={tileImg}></img>
+      <img className={styles.tileImg} src={tileImg} alt="cell" />
       {item ? <Item item={item} /> : null}
       {monster ? <Monster monster={monster} /> : null}
       {index === state.characterPosition ? <Character /> : null}

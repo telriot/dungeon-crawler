@@ -58,6 +58,8 @@ function Monster(props) {
         return guard
       case "Kogetaro, king of cats":
         return kogetaro
+      default:
+        return null
     }
   }
   const { monster } = props

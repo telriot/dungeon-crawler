@@ -200,6 +200,8 @@ export const itemImg = (name) => {
       return magicSword
     case "Super Magic Sword":
       return superSword
+    default:
+      return null
   }
 }
 export const fight = ({
