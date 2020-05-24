@@ -4,15 +4,15 @@ import {
   getRandomCellOnMap,
   getRandomCellType,
 } from "./helpers"
-import { monsters } from "./monsters"
+import { monsters, bossLevel } from "./monsters"
 import { items } from "./items"
 //MAP CREATION
-const createGrid = (height, width) => {
+const createGrid = (height, width, type) => {
   let grid = []
   for (let row = 0; row < height; row++) {
     for (let col = 0; col < width; col++) {
       grid.push({
-        type: undefined,
+        type: type || undefined,
         row,
         col,
         isVisited: false,
@@ -23,7 +23,7 @@ const createGrid = (height, width) => {
   }
   return grid
 }
-const placeBorders = (grid, height, width) => {
+const placeBorders = (grid, width) => {
   for (let cell = 0; cell < grid.length; cell++) {
     if (cell < width) grid[cell].type = "border"
     const modulo = cell % width
@@ -157,7 +157,6 @@ const placeRooms = ({
     let fuser = 0
     while (!startIsValid) {
       if (fuser >= gridHeight * gridWidth * 2) {
-        console.log("no valid space")
         return null
       }
       start = getRandomCellOnMap(gridHeight, gridWidth)
@@ -190,24 +189,37 @@ const placeMonsters = (grid) => {
     if (grid[cell].type === "floor") {
       let rollOneHundred = Math.random() * 100
       if (monsterDensity > rollOneHundred) {
-        let monster =
-          monsters[Math.round(Math.pow(Math.random(), 2) * monsters.length)]
+        let chance = Math.round(Math.pow(Math.random(), 2) * monsters.length)
+        let monster = monsters[chance]
+        grid[cell].monster = monster
+      }
+    } else if (grid[cell].type === "tunnel") {
+      let rollOneHundred = Math.random() * 100
+      if (monsterDensity - 3 > rollOneHundred) {
+        let chance =
+          Math.round(Math.pow(Math.random(), 2) * monsters.length) - 1
+        let monster = chance < 0 ? monsters[0] : monsters[chance]
         grid[cell].monster = monster
       }
     }
   }
 }
 const placeItems = (grid) => {
-  const itemDensity = 2
+  const itemDensity = 8
   for (let cell = 0; cell < grid.length; cell++) {
     if (grid[cell].type === "floor" || grid[cell].type === "tunnel") {
       let rollOneHundred = Math.random() * 100
       if (itemDensity > rollOneHundred) {
-        grid[cell].item =
-          items[Math.round(Math.pow(Math.random(), 2) * items.length)]
+        let chance = Math.round(Math.pow(Math.random(), 2) * items.length)
+        grid[cell].item = items[chance]
       }
     }
   }
+}
+const placeStaircase = (grid) => {
+  const randomCell = getRandomCellType("floor", grid, "item")
+  console.log(randomCell)
+  grid[randomCell].type = "staircase"
 }
 
 export const createDungeon = ({
@@ -221,7 +233,7 @@ export const createDungeon = ({
   stepMaxLength,
 }) => {
   let grid = createGrid(gridHeight, gridWidth)
-  placeBorders(grid, gridHeight, gridWidth)
+  placeBorders(grid, gridWidth)
 
   placeRooms({
     grid,
@@ -245,5 +257,16 @@ export const createDungeon = ({
   }
   placeMonsters(grid)
   placeItems(grid)
+  placeStaircase(grid)
   return grid
+}
+export const createBossMap = () => {
+  let map = createGrid(15, 15, "floor")
+  placeBorders(map, 15)
+  map[112].monster = bossLevel.kogetaro
+  const guards = [97, 102, 124, 129]
+  for (let guard of guards) {
+    map[guard].monster = bossLevel.guard
+  }
+  return map
 }

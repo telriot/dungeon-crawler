@@ -1,72 +1,55 @@
+@import "../styles/variables.scss";
+@import "../styles/mixins.scss";
 .board {
-  grid-column: 2/3;
+  @include container-center;
+  position: relative;
+  grid-column: board-start/board-end;
   grid-row: board-start/board-end;
-  border: 8px solid white;
-  border-radius: 2px;
+  padding: 0;
+  background-color: black;
   display: flex;
   flex-direction: column;
-  @media (max-width: 42em) {
-    border: 4px solid white;
+  outline: none;
+  @include respond(sm) {
+    border: 0;
   }
 }
-
 .row {
   width: 100%;
   margin: 0;
   display: flex;
 }
-.cell {
-  height: 1rem;
-  width: 1rem;
-  opacity: 0.7;
-
-  background-color: black;
-  border: 1px dotted grey;
-  margin: 0;
-  @media (max-width: 55em) {
-    height: 0.75rem;
-    width: 0.75rem;
-  }
-  @media (max-width: 42em) {
-    height: 0.5625rem;
-    width: 0.5625rem;
-    border: 0;
-  }
-  @media (max-width: 28em) {
-    height: 0.4375rem;
-    width: 0.4375rem;
-    border: 0;
-  }
+.chevronUp,
+.chevronDown,
+.chevronLeft,
+.chevronRight {
+  color: rgba($color-grey1, 0.3);
+  font-size: 8vw;
+  position: absolute;
 }
 
-.wall {
-  background-color: darkslategray;
+.chevronUp {
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 0 20vw 15vw 20vw;
 }
-.floor {
-  background-color: green;
+.chevronDown {
+  margin-top: 6px;
+  top: 100%;
+  left: 50%;
+  transform: translate(-50%, -100%);
+  padding: 15vw 20vw 0 20vw;
 }
-.tunnel {
-  background-color: darkgreen;
+.chevronLeft {
+  top: 50%;
+  left: 0%;
+  transform: translateY(-50%);
+  padding: 20vw 15vw 20vw 0;
 }
-.corner {
-  background-color: grey;
-}
-.door {
-  background-color: brown;
-}
-.border {
-  background-color: black;
-}
-
-.character {
-  background-color: goldenrod !important;
-}
-.monster {
-  background-color: orangered;
-}
-.item {
-  background-color: teal;
-}
-.cellVisible {
-  opacity: 1;
+.chevronRight {
+  top: 50%;
+  left: 100%;
+  transform: translate(-100%, -50%);
+  padding: 20vw 0 20vw 15vw;
 }

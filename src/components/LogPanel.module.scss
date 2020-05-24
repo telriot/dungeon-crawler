@@ -1,0 +1,21 @@
+@import "../styles/variables.scss";
+@import "../styles/mixins.scss";
+
+.container {
+  @include container-sides;
+  grid-column: log-start/log-end;
+  grid-row: log-start/log-end;
+  display: flex;
+  flex-direction: column;
+
+  max-height: 31.5rem;
+  overflow: auto;
+}
+.message {
+  @include text-sides;
+}
+.messageOld {
+  @include text-sides;
+  color: $color-grey5;
+  font-size: 0.875rem;
+}

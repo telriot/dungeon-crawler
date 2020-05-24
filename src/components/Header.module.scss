@@ -1,0 +1,24 @@
+@import "../styles/variables.scss";
+@import "../styles/mixins.scss";
+.header {
+  grid-row: header-start/header-end;
+  grid-column: header-start/header-end;
+  color: $color-pink1;
+  justify-self: center;
+  align-self: center;
+  text-transform: capitalize;
+  font-size: 3rem;
+  letter-spacing: 0.3125rem;
+  @include respond(md) {
+    font-size: 2.5rem;
+    letter-spacing: 0;
+  }
+  @include respond(sm) {
+    font-size: 5vw;
+    letter-spacing: 0;
+  }
+  @include respond(xs) {
+    font-size: 5vw;
+    letter-spacing: 0;
+  }
+}

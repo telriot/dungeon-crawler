@@ -1,10 +1,19 @@
+@import "../styles/mixins.scss";
 .container {
   display: grid;
-  grid-template-columns: 1fr max-content 1fr;
-  grid-template-rows: [vp-start]1rem[header-start] 4rem[header-end board-start] max-content[board-end controls-start] max-content[controls-end] 2rem[vp-end];
-  gap: 1rem;
-  @media (max-width: 55em) {
-    grid-template-rows: [vp-start].25rem[header-start] 4rem[header-end board-start] max-content[board-end controls-start] max-content[controls-end] .25rem[vp-end];
-    gap: 1rem 0;
+  grid-template-columns: [left-start]1fr[stats-start header-start instructions-start] 20% [stats-end board-start] max-content [board-end log-start]20% [log-end header-end instructions-end] 1fr[right-end];
+  grid-template-rows: [vp-start]1rem[header-start] 4rem[header-end board-start stats-start log-start ] max-content[board-end stats-end log-end controls-start] max-content[controls-end] 2rem[vp-end];
+  gap: 0.875rem;
+  @include respond(xl) {
+    grid-template-columns: [left-start]1fr[stats-start header-start instructions-start] 23% [stats-end board-start] max-content [board-end log-start]23% [log-end header-end instructions-end] 1fr[right-end];
+  }
+  @include respond(md) {
+    grid-template-columns: [left-start].5rem[ instructions-start log-start board-start header-start] 31.5rem [board-end stats-start]1fr [log-end stats-end header-end instructions-end] .5rem[right-end];
+    grid-template-rows: [vp-start].5rem[header-start] 4rem[header-end board-start stats-start] max-content[board-end stats-end log-start] 8rem[log-end] 2rem[vp-end];
+  }
+  @include respond(sm) {
+    grid-template-columns: [left-start]1fr[instructions-start log-start stats-start board-start header-start]90vw [board-end log-end stats-end header-end instructions-end] 1fr[right-end];
+    grid-template-rows: [vp-start].25rem[header-start] 2.5rem[header-end board-start ] max-content[board-end stats-end stats-start] max-content[stats-end log-start] 8rem[log-end instructions-start] 2rem[instructions-end vp-end];
+    gap: 0.5rem;
   }
 }

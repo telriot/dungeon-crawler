@@ -1,0 +1,72 @@
+@import "../styles/variables.scss";
+@import "../styles//mixins.scss";
+
+.container {
+  @include container-center;
+  @include respond(xs) {
+    padding: 0.75rem;
+  }
+  @include respond(xs) {
+    padding: 0.5rem;
+  }
+}
+
+.header {
+  font-size: 1.5rem;
+  line-height: 2rem;
+  text-align: center;
+  margin-bottom: 1.5rem;
+  @include respond(xs) {
+    font-size: 1.125rem;
+  }
+  @include respond(xxs) {
+    font-size: 0.925rem;
+    margin-bottom: 1rem;
+  }
+}
+
+.text {
+  @include text-center;
+  @include respond(xs) {
+    margin-bottom: 1rem;
+  }
+}
+.form {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  align-self: center;
+  justify-content: space-between;
+}
+.input {
+  border: none;
+  padding: 1.3rem 2rem;
+  background-color: transparent;
+  align-self: center;
+  font-family: inherit;
+  text-align: center;
+  font-size: 1.4rem;
+  max-width: 70%;
+  color: $color-blue1;
+  &:focus {
+    background-color: $color-black1;
+  }
+  @include respond(xs) {
+    font-size: 1rem;
+  }
+  @include respond(xs) {
+    padding: 0.75rem 2rem;
+  }
+}
+
+.button {
+  @include button;
+}
+.inactive {
+  color: $color-grey5;
+  &:hover {
+    background-color: black;
+    color: $color-grey5;
+    cursor: initial;
+  }
+}

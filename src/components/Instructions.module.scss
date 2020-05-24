@@ -1,0 +1,16 @@
+@import "../styles/variables.scss";
+@import "../styles/mixins.scss";
+.container {
+  grid-row: instructions-start/instructions-end;
+  grid-column: instructions-start/instructions-end;
+}
+.text {
+  text-align: center;
+  font-size: 0.75rem;
+  color: $color-grey4;
+  margin-bottom: 0.5rem;
+  line-height: 0.75rem;
+  @include respond(sm) {
+    font-size: 0.625rem;
+  }
+}

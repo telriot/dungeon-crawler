@@ -1,120 +1,189 @@
-import React, { useContext } from "react"
-import styles from "./Board.module.scss"
+import React, { useContext, useState } from "react"
 import { MapContext } from "../contexts/mapContext"
-import { getSurroundings, getDirectionFromKey } from "../helpers"
-import classNames from "classnames/bind"
 import { CharacterContext } from "../contexts/characterContext"
+import Cell from "./Cell"
+import { revealCells, fight, pickUp, consumeItem } from "../helpers"
+import { MobileView } from "react-device-detect"
+import {
+  FaChevronDown,
+  FaChevronLeft,
+  FaChevronRight,
+  FaChevronUp,
+} from "react-icons/fa"
+import styles from "./Board.module.scss"
 
 function Board() {
   const { state, dispatch, GRID_HEIGHT, GRID_WIDTH } = useContext(MapContext)
   const { charState, charDispatch } = useContext(CharacterContext)
 
-  let cx = classNames.bind(styles)
+  const [running, setRunning] = useState(false)
 
-  const fight = (monster, cellIndex) => {
-    console.log(`You fight a ${monster.name}`)
-    const monsterHit = monster.strength + Math.round(Math.random() * 6)
-    const weaponDamage = charState.weapons.length
-      ? charState.weapons[0].strength
-      : 0
-    const charHit =
-      weaponDamage + charState.strength + Math.round(Math.random() * 6)
-    if (charHit < monster.hp) {
-      console.log(`You dealt ${charHit} damage to a ${monster.name}`)
-      dispatch({ type: "DAMAGE", damage: charHit, cell: cellIndex })
-    } else {
-      console.log(`You vanquished a ${monster.name}`)
-      dispatch({ type: "KILL", cell: cellIndex })
-
-      charDispatch({ type: "GET_XP", xp: monster.xp })
-    }
-    if (monsterHit < charState.hp) {
-      console.log(`A ${monster.name} dealt you ${monsterHit} damage`)
-      charDispatch({ type: "DAMAGE", damage: monsterHit })
-    } else {
-      console.log("GAME OVER")
-      charDispatch({ type: "GAME_OVER" })
-    }
-  }
   const handleKeyPress = (e) => {
+    const click = e.currentTarget.dataset.direction
     const key = e.keyCode
-    if (key === 38 || key === 40 || key === 39 || key === 37) {
-      const surroundings = getSurroundings(
-        state.characterPosition,
-        state.map,
-        GRID_WIDTH
-      )
-      const direction = getDirectionFromKey(e)
-      const targetCell = surroundings[direction]
+    const { map, characterPosition } = state
+    const width = state.bossMap ? 15 : GRID_WIDTH
+    //if arrows
+    let targetCell
+    if (key === 38 || click === "up") {
+      targetCell = map[characterPosition - width]
+    } else if (key === 40 || click === "down") {
+      targetCell = map[characterPosition + width]
+    } else if (key === 39 || click === "right") {
+      targetCell = map[characterPosition + 1]
+    } else if (key === 37 || click === "left") {
+      targetCell = map[characterPosition - 1]
+    }
+    if (targetCell) {
+      if (running === key) return null
+      if (running) setRunning(null)
+      const updatedMap = revealCells(state.map, state.characterPosition, width)
       const cellType = targetCell.type
-      const cellIndex = targetCell.row * GRID_WIDTH + targetCell.col
+      const cellIndex = targetCell.row * width + targetCell.col
       if (cellType === "floor" || cellType === "tunnel") {
         if (targetCell.monster) {
           const monster = targetCell.monster
-          fight(monster, cellIndex)
+          fight({ monster, cellIndex, dispatch, charState, charDispatch })
         } else {
-          dispatch({ type: "MOVE_CHARACTER", characterPosition: cellIndex })
+          dispatch({
+            type: "MOVE_CHARACTER",
+            characterPosition: cellIndex,
+            map: updatedMap,
+          })
         }
       } else if (cellType === "door") {
-        dispatch({ type: "MOVE_CHARACTER", characterPosition: cellIndex })
+        dispatch({
+          type: "MOVE_CHARACTER",
+          characterPosition: cellIndex,
+          map: updatedMap,
+        })
+      } else if (cellType === "staircase") {
+        dispatch({
+          type: "GO_TO_BOSS_MAP",
+        })
       }
-      //if "p"
-    } else if (key === 80) {
-      const currentCell = state.map[state.characterPosition]
-      if (currentCell.item) {
-        const item = currentCell.item
-        if (item.type === "weapon") {
-          const charWeapon = charState.weapons.length
-            ? charState.weapons[0]
-            : null
-          dispatch({
-            type: "DROP_ITEM",
-            cell: state.characterPosition,
-            item: charWeapon,
-          })
-          charWeapon && console.log(`You dropped a ${charWeapon.name}`)
-          charDispatch({ type: "PICK_UP_WEAPON", item })
-          console.log(`You picked up a ${item.name}`)
-        } else {
-          charDispatch({ type: "PICK_UP_ITEM", item })
-          dispatch({ type: "REMOVE_ITEM", cell: state.characterPosition })
-          console.log(`You picked up a ${item.name}`)
-        }
-      } else {
-        console.log("There is nothing to pick up here")
-      }
+      setRunning(key)
+      setTimeout(() => setRunning(false), 100)
+    }
+    //if Enter
+    else if (key === 13) {
+      pickUp({ state, charState, dispatch, charDispatch })
+      //if 1,2,3,4
+    } else if (key === 49) {
+      charState.items[0] && consumeItem(charState.items[0], 0, charDispatch)
+    } else if (key === 50) {
+      charState.items[1] && consumeItem(charState.items[1], 1, charDispatch)
+    } else if (key === 51) {
+      charState.items[2] && consumeItem(charState.items[2], 2, charDispatch)
+    } else if (key === 52) {
+      charState.items[3] && consumeItem(charState.items[3], 3, charDispatch)
     }
   }
 
-  const handleCellClick = (cell) => () => {
-    cell.isVisible && console.log(cell)
+  const renderBoard = (map, height, width, characterPosition) => {
+    const viewPortWidth = 7
+    const viewPortHeight = 7
+    let currentRow =
+      Math.floor(characterPosition / width) <= viewPortHeight
+        ? viewPortHeight
+        : Math.floor(characterPosition / width) >= height - viewPortHeight
+        ? height - viewPortHeight - 1
+        : Math.floor(characterPosition / width)
+    let currentCol =
+      characterPosition % width <= viewPortWidth
+        ? viewPortWidth
+        : characterPosition % width >= width - viewPortWidth
+        ? width - viewPortWidth - 1
+        : characterPosition % width
+
+    let grid = []
+    for (let row = 0; row < height; row++) {
+      if (
+        row >= currentRow - viewPortHeight &&
+        row <= currentRow + viewPortHeight
+      ) {
+        let thisRow = []
+        for (let col = 0; col < width; col++) {
+          if (
+            col >= currentCol - viewPortWidth &&
+            col <= currentCol + viewPortWidth
+          ) {
+            const index = row * width + col
+            thisRow.push(
+              <Cell key={`Cell-${index}`} index={index} cell={map[index]} />
+            )
+          } else continue
+        }
+        grid.push(
+          <div key={`row${row}`} className={styles.row}>
+            {thisRow}
+          </div>
+        )
+      } else {
+        continue
+      }
+    }
+    return grid
   }
-  const renderBoard = (map, height, width) => {
+  return (
+    <>
+      <div className={styles.board} onKeyDown={handleKeyPress} tabIndex={-1}>
+        {state.map.length && state.bossMap === false
+          ? renderBoard(
+              state.map,
+              GRID_HEIGHT,
+              GRID_WIDTH,
+              state.characterPosition
+            )
+          : state.map.length && state.bossMap
+          ? renderBoard(state.map, 15, 15, state.characterPosition)
+          : null}
+        <MobileView>
+          <div
+            onClick={handleKeyPress}
+            data-direction="up"
+            className={styles.chevronUp}
+          >
+            <FaChevronUp />
+          </div>
+          <div
+            className={styles.chevronDown}
+            onClick={handleKeyPress}
+            data-direction="down"
+          >
+            <FaChevronDown />
+          </div>
+          <div
+            className={styles.chevronLeft}
+            onClick={handleKeyPress}
+            data-direction="left"
+          >
+            <FaChevronLeft />
+          </div>
+          <div
+            className={styles.chevronRight}
+            onClick={handleKeyPress}
+            data-direction="right"
+          >
+            <FaChevronRight />
+          </div>
+        </MobileView>
+      </div>
+    </>
+  )
+}
+
+export default Board
+
+/*FOR TESTING FULL MAP
+  const renderBoard2 = (map, height, width) => {
     let grid = []
     for (let row = 0; row < height; row++) {
       let thisRow = []
       for (let col = 0; col < width; col++) {
         const index = row * width + col
-        let cellClass = cx({
-          cell: true,
-          character: index === state.characterPosition,
-          wall: map[index].type === "wall",
-          floor: map[index].type === "floor",
-          corner: map[index].type === "corner",
-          door: map[index].type === "door",
-          border: map[index].type === "border",
-          tunnel: map[index].type === "tunnel",
-          wall: map[index].type === "wall",
-          cellVisible: map[index].isVisible,
-          monster: map[index].monster,
-          item: map[index].item,
-        })
         thisRow.push(
-          <div
-            key={`cell${index}`}
-            className={cellClass}
-            onDoubleClick={handleCellClick(map[index])}
-          ></div>
+          <Cell key={`Cell-${index}`} index={index} cell={map[index]} />
         )
       }
       grid.push(
@@ -123,15 +192,6 @@ function Board() {
         </div>
       )
     }
-    return grid
-  }
-  return (
-    <div className={styles.board} onKeyDown={handleKeyPress} tabIndex={-1}>
-      {state.map.length
-        ? renderBoard(state.map, GRID_HEIGHT, GRID_WIDTH)
-        : null}
-    </div>
-  )
-}
 
-export default Board
+    return grid
+  }*/

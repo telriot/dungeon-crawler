@@ -1,0 +1,29 @@
+@import "../styles/variables.scss";
+@import "../styles/mixins.scss";
+
+.container {
+  @include container-center;
+  justify-content: space-around;
+  align-items: center;
+}
+.header {
+  font-size: 3.5rem;
+
+  text-transform: uppercase;
+  color: $color-red-1;
+  @include respond(xs) {
+    font-size: 2.25rem;
+  }
+  @include respond(xxs) {
+    font-size: 1.75rem;
+  }
+}
+.text {
+  @include text-center;
+}
+.buttonDiv {
+  align-self: center;
+}
+.button {
+  @include button;
+}
