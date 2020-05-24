@@ -86,7 +86,7 @@ const CharacterContextProvider = ({ children }) => {
       case TYPES.LEVEL_UP:
         return {
           ...state,
-          level: state.level++,
+          level: state.level + 1,
           maxHp: state.maxHp + state.level * Math.round(Math.random() * 6),
           hp: state.maxHp,
           strength: state.strength + 1 + Math.floor(Math.random() * 4),
