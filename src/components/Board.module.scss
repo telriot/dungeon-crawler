@@ -12,6 +12,10 @@
   outline: none;
   @include respond(sm) {
     border: 0;
+    &:focus {
+      border: 0;
+      outline: 1px $color-pink1 solid;
+    }
   }
 }
 .row {

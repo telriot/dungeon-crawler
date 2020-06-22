@@ -38,6 +38,9 @@ $breakpoints: (
     width: 90vw;
     height: 90vw;
   }
+  &:focus {
+    border: 12px solid $color-grey5;
+  }
 }
 @mixin container-sides {
   border: 6px solid $color-grey5;
@@ -78,7 +81,8 @@ $breakpoints: (
   font-size: 1.4rem;
   color: $color-grey2;
   cursor: pointer;
-  &:hover {
+  &:hover,
+  &:focus {
     background-color: $color-black1;
     color: $color-pink1;
   }

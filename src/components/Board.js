@@ -77,6 +77,9 @@ function Board() {
       charState.items[2] && consumeItem(charState.items[2], 2, charDispatch)
     } else if (key === 52) {
       charState.items[3] && consumeItem(charState.items[3], 3, charDispatch)
+    } else if (key === 27) {
+      console.log("esc")
+      charDispatch({ type: "GAME_OVER" })
     }
   }
 
@@ -127,7 +130,7 @@ function Board() {
   }
   return (
     <>
-      <div className={styles.board} onKeyDown={handleKeyPress} tabIndex={-1}>
+      <div className={styles.board} onKeyDown={handleKeyPress} tabIndex={0}>
         {state.map.length && state.bossMap === false
           ? renderBoard(
               state.map,

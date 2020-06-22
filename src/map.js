@@ -218,7 +218,6 @@ const placeItems = (grid) => {
 }
 const placeStaircase = (grid) => {
   const randomCell = getRandomCellType("floor", grid, "item")
-  console.log(randomCell)
   grid[randomCell].type = "staircase"
 }
 
